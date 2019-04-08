@@ -35,13 +35,13 @@ namespace SportsStore.Payment.Controllers
 
         private bool Validate(PaymentDetails payementDetails)
         {
-            if(string.IsNullOrEmpty(payementDetails.Firstname) && string.IsNullOrWhiteSpace(payementDetails.Firstname))
+            if(string.IsNullOrEmpty(payementDetails.Firstname) || string.IsNullOrWhiteSpace(payementDetails.Firstname))
             {
                 throw new FormatException("Please enter a First name");
                 
             }
 
-            if (string.IsNullOrEmpty(payementDetails.Lastname) && string.IsNullOrWhiteSpace(payementDetails.Lastname))
+            if (string.IsNullOrEmpty(payementDetails.Lastname) || string.IsNullOrWhiteSpace(payementDetails.Lastname))
             {
                 throw new FormatException("Please enter a Last name");
             }

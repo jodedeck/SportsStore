@@ -10,6 +10,7 @@
 <h2>Create</h2>
 
 <h4>Payment Details:</h4>
+<h5 id="paymentTool"></h5>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -27,21 +28,21 @@
             </div>
             <div class="form-group">
                 <label asp-for="ExpirationDate" class="control-label"></label>
-                <input asp-for="ExpirationDate" class="form-control" />
-                <span asp-validation-for="ExpirationDate" class="text-danger"></span>
+                <input asp-for="ExpirationDate" class="form-control" type="date" />
+                <span asp-validation-for="ExpirationDate" id="expirationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CardNumber" class="control-label"></label>
                 <input asp-for="CardNumber" class="form-control" type="text" />
-                <span asp-validation-for="CardNumber" class="text-danger"></span>
+                <span asp-validation-for="CardNumber" id="cardNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SecurityNumber" class="control-label"></label>
                 <input asp-for="SecurityNumber" class="form-control" type="text" />
-                <span asp-validation-for="SecurityNumber" class="text-danger"></span>
+                <span asp-validation-for="SecurityNumber" id="securityNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input id="btnValidation" type="button" value="Process payment" class="btn btn-default" />
+                <input id="btnValidation" type="submit" value="Process payment" class="btn btn-default" />
             </div>
         </form>
     </div>
@@ -64,19 +65,66 @@
 
     var checkCreditCard = function () {
         //ajoutez dynamiquement la valeur rentré dans CardNumber ci-dessus
+        var cardNumberValidation = document.getElementById("cardNumber");
+        var securityNumberValidation = document.getElementById("securityNumber");
         var cardNumberValue = document.getElementById("CardNumber").value;
         var securityNumber = document.getElementById("SecurityNumber").value;
+        var payment = document.getElementById("paymentTool");
+        var expirationDate = document.getElementById("expirationDate");
 
-        alert(creditcard.isValid(cardNumberValue));
+        payment.innerHTML = creditcard.getCreditCardNameByNumber(cardNumberValue);
 
-        //Il faut dynamiquement loader depuis Cardnumber & Security number pour le 2ème argument
-        console.log(creditcard.isSecurityCodeValid(cardNumberValue, securityNumber));
+        //ajoutez la logique pour vérifier si la date d'expiration est bonne
 
-        // le résultat de ceci nous donne le type de carte (il faudrait l'afficher quelque part pour faire les gros dur)
-        console.log(creditcard.getCreditCardNameByNumber(cardNumberValue));
+        var date = new Date($('#ExpirationDate').val());
+        day = date.getDate();
+        month = date.getMonth() + 1;
+        year = date.getFullYear();
+
+        //validation de la date
+        if (creditcard.isExpirationDateValid(month, year)) {
+            expirationDate.style.color = 'green';
+            expirationDate.innerHTML = "Valid";
+
+        } else {
+            expirationDate.style.color = 'red';
+            expirationDate.innerHTML = "Please enter a valid expiration date";
+        }
+
+        //validation de la 
+        if (!creditcard.isValid(cardNumberValue)) {
+            cardNumberValidation.style.color = 'red';
+            cardNumberValidation.innerHTML = "Please enter a valid Card Number";
+        }
+        else {
+            var cardNumberValidation = document.getElementById("cardNumber")
+            cardNumberValidation.style.color = 'green';
+            cardNumberValidation.innerHTML = "Valid card number";
+        }
+
+        if (!creditcard.isSecurityCodeValid(cardNumberValue, securityNumber)) {
+            securityNumberValidation.style.color = "red";
+            securityNumberValidation.innerHTML = "Please enter a valid Security code";
+        }
+        else {
+            securityNumberValidation.style.color = "green";
+            securityNumberValidation.innerHTML = "Valid";
+        }
+
+        if (creditcard.isExpirationDateValid(month, year) && creditcard.isSecurityCodeValid(cardNumberValue, securityNumber) && creditcard.isValid(cardNumberValue)) {
+            $('#btnValidation').show();
+        }
+
+
     }
-
     document.getElementById("btnValidation").addEventListener('click', checkCreditCard);
+    document.getElementById("CardNumber").addEventListener("blur", checkCreditCard);
+    document.getElementById("SecurityNumber").addEventListener("blur", checkCreditCard);
+    document.getElementById("ExpirationDate").addEventListener("blur", checkCreditCard);
 
+    $(document).ready(function () {
+
+        $('#btnValidation').hide();
+    });
 
 </script>

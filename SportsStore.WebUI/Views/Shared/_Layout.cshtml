@@ -10,9 +10,11 @@
 
 </head>
 <body>
+    
     <div class="navbar navbar-inverse" role="navigation">
-        <a class="navbar-brand" href="#">SPORTS STORE</a>
+        <a class="navbar-brand" href="#">SPORTS STORE  @Html.ActionLink("Admin", "Index", "Admin", null,  new { @class = "navbar-brand pull-right" }) </a>
         @Html.Action("Summary", "Cart")
+       
     </div>
 
     <div class="row panel">
