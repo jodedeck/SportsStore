@@ -5,6 +5,7 @@ using SportsStore.Domain.Concrete;
 using SportsStore.Domain.Entities;
 using SportsStore.WebUI.Infrastructure.Abstract;
 using SportsStore.WebUI.Infrastructure.Concrete;
+using SportsStore.WebUI.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -39,6 +40,7 @@ namespace SportsStore.WebUI.Infrastructure
 
             //put bidings here
             kernel.Bind<IProductRepository>().To<EFProductRepository>();
+            kernel.Bind<IRequestService>().To<RequestService>();
 
             EmailSettings emailSettings = new EmailSettings
             {

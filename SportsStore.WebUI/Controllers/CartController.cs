@@ -1,5 +1,6 @@
 ﻿using SportsStore.Domain.Abstract;
 using SportsStore.Domain.Entities;
+using SportsStore.WebUI.Infrastructure.Abstract;
 using SportsStore.WebUI.Models;
 using System;
 using System.Collections.Generic;
@@ -13,11 +14,15 @@ namespace SportsStore.WebUI.Controllers
     {
         private IProductRepository repository;
         private IOrderProcessor orderProcessor;
+        private IRequestService requestService;
+        private string paymentUrl = System.Configuration.ConfigurationManager.AppSettings["paymentUrl"];
 
-        public CartController(IProductRepository repo, IOrderProcessor proc)
+        public CartController(IProductRepository repo, IOrderProcessor proc, IRequestService reqservice)
         {
             orderProcessor = proc;
             repository = repo;
+            requestService = reqservice;
+
         }
 
         public ViewResult Index(Cart cart, string returnUrl)
@@ -60,8 +65,18 @@ namespace SportsStore.WebUI.Controllers
             return View(new ShippingDetails());
         }
 
+        public ViewResult SuccessPayment(Cart cart)
+        {
+            return View("Completed", cart);
+        }
+
+        public ViewResult FailPayment(Cart cart)
+        {
+            return View("FailPayment", cart);
+        }
+
         [HttpPost]
-        public ViewResult Checkout(Cart cart, ShippingDetails shippingDetails)
+        public RedirectResult Checkout(Cart cart, ShippingDetails shippingDetails)
         {
             if (cart.Lines.Count() == 0)
             {
@@ -71,12 +86,26 @@ namespace SportsStore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 orderProcessor.ProcessOrder(cart, shippingDetails);
-                cart.Clear();
-                return View("Completed");
+                //cart.Clear();
+                //Je dois créer la requête au projet CORE
+                //requestService.Send(cart);
+                if (!string.IsNullOrEmpty(paymentUrl))
+                {
+                    return Redirect(paymentUrl);
+                }
+
+
+                //Process le retour du projet Core (payment réussi ou NON) et afficher une page en fonction du résultat
+                //Si payement raté
+
+                //Si payement réussi
+                return null;
+                //return View("Completed");
             }
             else
             {
-                return View(shippingDetails);
+                return null;
+                //return View(shippingDetails);
             }
         }
     }

@@ -1,7 +1,35 @@
-﻿
+﻿@model SportsStore.Domain.Entities.Cart
 @{
     ViewBag.Title = "SportsStore: Order submitted";
 }
 
 <h2>Thanks!</h2>
 Thanks for placing your order. We'll ship your goods as soon as possible!.
+<h3>Here is a report of what you baught :</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Product:
+            </th>
+            <th>
+                Quantity:
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var line in Model.Lines)
+        {
+            <tr>
+                <td>
+                    @line.Product.Name
+                </td>
+                <td>
+                    @line.Quantity.ToString()
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
