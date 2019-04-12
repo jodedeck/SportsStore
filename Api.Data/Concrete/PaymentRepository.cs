@@ -3,16 +3,16 @@ using Api.Data.DataContext;
 using Api.Data.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
 
 namespace Api.Data.Concrete
 {
-    public class CustomerRepository : ICustomerRepository
+    public class PaymentRepository : IPaymentRepository
     {
         private readonly ApiDbContext db;
 
-        public CustomerRepository(ApiDbContext db)
+        public PaymentRepository(ApiDbContext db)
         {
             this.db = db;
         }
@@ -21,14 +21,14 @@ namespace Api.Data.Concrete
             return db.SaveChanges();
         }
 
-        public Customer GetById(int id)
+        public PaymentData GetById(int id)
         {
-            return db.Customers.FirstOrDefault(x => x.Id == id);
+            return db.Payments.FirstOrDefault(x => x.Id == id);
         }
 
-        public void SaveCustomer(Customer customer)
+        public void SavePayment(PaymentData paymentData)
         {
-            db.Customers.Add(customer);
+            db.Payments.Add(paymentData);
         }
     }
 }

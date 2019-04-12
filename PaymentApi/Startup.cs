@@ -36,6 +36,9 @@ namespace PaymentApi
             });
 
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICardRepository, CardRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             services.AddCors(options =>
             {

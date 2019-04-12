@@ -25,7 +25,7 @@ namespace SportsStore.Payment.Models
         [Required]
         public DateTime ExpirationDate { get; set; }
         [Required]
-        public int CardNumber { get; set; }
+        public double CardNumber { get; set; }
         [Required]
         public int SecurityNumber { get; set; }
 

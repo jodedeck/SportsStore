@@ -40,6 +40,9 @@ namespace SportsStore.Payment
             });
 
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ICardRepository, CardRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 

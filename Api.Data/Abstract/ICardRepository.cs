@@ -7,8 +7,10 @@ namespace Api.Data.Abstract
 {
     public interface ICardRepository
     {
-        Order GetById(int id);
-        void SaveOrder(Order order);
+        Card GetById(int id);
+        void SaveCard(Card order);
         int Commit();
+
+        Card GetByCredentials(string lastName, string ccv, string cardNumer);
     }
 }

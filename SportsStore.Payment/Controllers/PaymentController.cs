@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,22 +6,29 @@ using Api.Data.Abstract;
 using Api.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using SportsStore.Payment.Models;
-using Api.Data.Entities;
-
+using System.Text;
+using Newtonsoft.Json;
+using PaymentApi.Models;
 
 namespace SportsStore.Payment.Controllers
 {
     public class PaymentController : Controller
     {
         private readonly IOrderRepository orderRepository;
+        private readonly ICardRepository cardRepository;
+        private readonly ICustomerRepository customerRepository;
+        private readonly IPaymentRepository paymentRepository;
         private string successUrl = "http://localhost:50036/Cart/SuccessPayment";
         private string failureUrl = "http://localhost:50036/Cart/FailPayment";
 
 
 
-        public PaymentController(IOrderRepository orderRepository)
+        public PaymentController(IOrderRepository orderRepository, ICardRepository cardRepository, ICustomerRepository customerRepository, IPaymentRepository paymentRepository)
         {
             this.orderRepository = orderRepository;
+            this.cardRepository = cardRepository;
+            this.customerRepository = customerRepository;
+            this.paymentRepository = paymentRepository;
         }
 
         public IActionResult Create()
@@ -45,27 +51,37 @@ namespace SportsStore.Payment.Controllers
         [HttpPost]
         public RedirectResult Create(PaymentDetails payementDetails)
         {
-            Api.Data.Entities.Card card = new Api.Data.Entities.Card
-            {
+          
 
+            Api.Data.Entities.Card card = RetrieveCard(payementDetails);
+      
+
+            //cardRepository.SaveCard(card);
+            //cardRepository.Commit();
+
+            Api.Data.Entities.Customer customer = new Api.Data.Entities.Customer
+            {
+                cardId = card.Id,
+                Name = payementDetails.Lastname +", " +payementDetails.Firstname
             };
+
+
+
+            //customerRepository.SaveCustomer(customer);
+            //customerRepository.Commit();
 
             PaymentData payment = new PaymentData()
             {
                 Order = orderRepository.GetById(int.Parse(payementDetails.TransactionId)),
-                
-
-                Customer = new Api.Data.Entities.Customer
-                {
-                    cardId = 0,
-                    Name = ""
-                }
-               
-
+                Customer = customer
             };
 
+            //paymentRepository.SavePayment(payment);
+            //paymentRepository.Commit();
 
+            PaymentApiModel pam = new PaymentApiModel(card, payment, customer);
 
+            var requestResult = CreatePaymentRequest(pam);
 
 
 
@@ -76,8 +92,8 @@ namespace SportsStore.Payment.Controllers
             var rnd = new Random();
             int val = rnd.Next(6);
 
-            //créer une requête avec le transactionId et les info de payment vers l'api
-            bool isPaid = SendPayment(payementDetails);
+         
+         
 
 
             //Si le payment réussi, alors on renvoi vers l'écran de réussite
@@ -89,15 +105,46 @@ namespace SportsStore.Payment.Controllers
                 return Redirect(failureUrl);
         }
 
-        private bool SendPayment(PaymentDetails payementDetails)
+        private Api.Data.Entities.Card RetrieveCard(PaymentDetails payementDetails)
         {
+            string month = payementDetails.ExpirationDate.Month.ToString();
+            string year = payementDetails.ExpirationDate.Year.ToString();
+            string expDate = month + "/" + year;
 
+            if (cardRepository.GetByCredentials(payementDetails.Lastname, payementDetails.SecurityNumber.ToString(), payementDetails.CardNumber.ToString()) == null)
+            {
+                Api.Data.Entities.Card card = new Api.Data.Entities.Card
+                {
+                    cardholderName = payementDetails.Lastname,
+                    cardNumber = payementDetails.CardNumber.ToString(),
+                    cvv = payementDetails.SecurityNumber.ToString(),
+                    expiryDate = expDate
+                };
+                return card;
+            }
+            else
+            {
+                return cardRepository.GetByCredentials(payementDetails.Lastname, payementDetails.SecurityNumber.ToString(), payementDetails.CardNumber.ToString());
+            }
+        }
+
+        private async Task<HttpResponseMessage> CreatePaymentRequest(PaymentApiModel payment)
+        {
             using (var client = new HttpClient())
             using (var request = new HttpRequestMessage())
             {
-                return true;
+                request.Method = HttpMethod.Post;
+                request.RequestUri = new Uri("https://localhost:44377/api/Transaction");
+
+
+                var json = JsonConvert.SerializeObject(payment);
+                request.Content = new StringContent( json , Encoding.UTF8, "application/json");
+                var response = await client.SendAsync(request);
+                return response;
             }
         }
+
+
 
         private bool Validate(PaymentDetails payementDetails)
         {
