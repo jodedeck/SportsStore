@@ -1,36 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Api.Data.Abstract;
+using Api.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using SportsStore.Payment.Models;
+using Api.Data.Entities;
+
 
 namespace SportsStore.Payment.Controllers
 {
     public class PaymentController : Controller
     {
+        private readonly IOrderRepository orderRepository;
         private string successUrl = "http://localhost:50036/Cart/SuccessPayment";
         private string failureUrl = "http://localhost:50036/Cart/FailPayment";
 
+
+
+        public PaymentController(IOrderRepository orderRepository)
+        {
+            this.orderRepository = orderRepository;
+        }
+
         public IActionResult Create()
         {
-            return View(new PaymentDetails());
+            string text = Request.Path;
+            string transactionid = text.Split('/').Last();
+
+            //int index = transactionId.IndexOf("-");
+            //string price = transactionId.Substring(0, index);
+            //string shopId = transactionId.Substring(index + 1);
+
+            PaymentDetails pd = new PaymentDetails()
+            {
+                TransactionId = transactionid
+            };
+
+            return View(pd);
         }
 
         [HttpPost]
         public RedirectResult Create(PaymentDetails payementDetails)
         {
+            Api.Data.Entities.Card card = new Api.Data.Entities.Card
+            {
+
+            };
+
+            PaymentData payment = new PaymentData()
+            {
+                Order = orderRepository.GetById(int.Parse(payementDetails.TransactionId)),
+                
+
+                Customer = new Api.Data.Entities.Customer
+                {
+                    cardId = 0,
+                    Name = ""
+                }
+               
+
+            };
+
+
+
+
+
+
+
             //ajouter une loguique de réussite ou de rejet du payment
             //manipuler le paymentDetails pour voir si ca marche
             bool result = Validate(payementDetails);
+            var rnd = new Random();
+            int val = rnd.Next(6);
+
+            //créer une requête avec le transactionId et les info de payment vers l'api
+            bool isPaid = SendPayment(payementDetails);
+
 
             //Si le payment réussi, alors on renvoi vers l'écran de réussite
-            if (result)
+            if (result && val <= 3)
             {
                 return Redirect(successUrl);
             }
             else
                 return Redirect(failureUrl);
+        }
+
+        private bool SendPayment(PaymentDetails payementDetails)
+        {
+
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
+            {
+                return true;
+            }
         }
 
         private bool Validate(PaymentDetails payementDetails)
@@ -55,10 +121,6 @@ namespace SportsStore.Payment.Controllers
             {
                 return false;
             }
-
-            //vérifier que le numéro de la carte est OK
-            //apeller la validation jQuery
-
 
             return true;
 

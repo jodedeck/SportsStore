@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\js\karma.conf.js" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Api.Data\Api.Data.csproj" />
-    <ProjectReference Include="..\SportsStore.WebUI\SportsStore.WebUI.csproj" />
   </ItemGroup>
 
 </Project>

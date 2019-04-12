@@ -8,6 +8,16 @@ namespace SportsStore.Payment.Models
 {
     public class PaymentDetails
     {
+
+        public PaymentDetails()
+        {
+
+        }
+        public PaymentDetails(string transactionId)
+        {
+            TransactionId = transactionId;
+        }
+
         [Required]
         public string Firstname { get; set; }
         [Required]
@@ -18,5 +28,10 @@ namespace SportsStore.Payment.Models
         public int CardNumber { get; set; }
         [Required]
         public int SecurityNumber { get; set; }
+
+       // public string Price { get; set; }
+
+        public string TransactionId { get; set; }
+
     }
 }

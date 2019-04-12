@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace SportsStore.WebUI.Infrastructure.Services
@@ -29,7 +30,45 @@ namespace SportsStore.WebUI.Infrastructure.Services
             }
         }
 
+        public async Task<HttpResponseMessage> GetTransactionId(decimal value)
+        {
+            string baseUrl = "http://localhost:51625/api/";
+            string storeID = "1001";
+            int ivalue = (int)(value);
 
+            using (var client = new HttpClient())
+            using (var request = new HttpRequestMessage())
+            {
+                request.Method = HttpMethod.Get;
+                request.RequestUri = new Uri(baseUrl + "Transaction?value=" + ivalue + "&storeId=" + storeID);
+                var transactionId = await client.SendAsync(request);
+                //https://localhost:5001/Transaction/Get/value/1001
+                //https://localhost:44377/api/Transaction?value=100&storeId=1001
+
+
+                return transactionId;
+            }
+        }
+
+        //public async Task<string[]> Get()
+        //{
+        //    string baseUrl = "http://localhost:51625/api/Values";
+        //    //string storeID = "1001";
+        //    //int ivalue = (int)(value);
+
+        //    using (var client = new HttpClient())
+        //    using (var request = new HttpRequestMessage())
+        //    {
+        //        request.Method = HttpMethod.Get;
+        //        request.RequestUri = new Uri(baseUrl);
+        //        var transactionId = await client.SendAsync(request);
+        //        //https://localhost:5001/Transaction/Get/value/1001
+        //        return transactionId
+        //    }
+
+
+
+        
 
     }
 }

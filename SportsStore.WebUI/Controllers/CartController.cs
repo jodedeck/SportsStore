@@ -5,6 +5,7 @@ using SportsStore.WebUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -76,7 +77,7 @@ namespace SportsStore.WebUI.Controllers
         }
 
         [HttpPost]
-        public RedirectResult Checkout(Cart cart, ShippingDetails shippingDetails)
+        public async Task<RedirectResult> Checkout(Cart cart, ShippingDetails shippingDetails)
         {
             if (cart.Lines.Count() == 0)
             {
@@ -86,21 +87,16 @@ namespace SportsStore.WebUI.Controllers
             if (ModelState.IsValid)
             {
                 orderProcessor.ProcessOrder(cart, shippingDetails);
-                //cart.Clear();
-                //Je dois créer la requête au projet CORE
-                //requestService.Send(cart);
+
+                var response = await requestService.GetTransactionId(cart.ComputeTotalValue());
+                string transactionId = await response.Content.ReadAsStringAsync();
+
                 if (!string.IsNullOrEmpty(paymentUrl))
                 {
-                    return Redirect(paymentUrl);
+                    return Redirect(paymentUrl + "/" + transactionId);
                 }
 
-
-                //Process le retour du projet Core (payment réussi ou NON) et afficher une page en fonction du résultat
-                //Si payement raté
-
-                //Si payement réussi
                 return null;
-                //return View("Completed");
             }
             else
             {
