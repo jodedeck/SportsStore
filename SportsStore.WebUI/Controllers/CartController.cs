@@ -1,6 +1,7 @@
 ﻿using SportsStore.Domain.Abstract;
 using SportsStore.Domain.Entities;
 using SportsStore.WebUI.Infrastructure.Abstract;
+using SportsStore.WebUI.Infrastructure.Attributes;
 using SportsStore.WebUI.Models;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace SportsStore.WebUI.Controllers
             });
         }
 
+        [AdminAuth]
         public RedirectToRouteResult AddToCart(Cart cart, int productId, string returnUrl)
         {
             Product product = repository.Products.FirstOrDefault(p => p.ProductID == productId);

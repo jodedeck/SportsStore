@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace SportsStore.WebUI.Controllers
 {
+    
     public class AccountController : Controller
     {
         IAuthProvider authProvider;
@@ -29,7 +30,9 @@ namespace SportsStore.WebUI.Controllers
             {
                 if(authProvider.Authenticate(model.UserName, model.Password))
                 {
+                    UserSession.Name = model.UserName;
                     return Redirect(returnUrl ?? Url.Action("Index", "Admin"));
+
                 }
                 else
                 {

@@ -55,7 +55,7 @@ namespace PaymentApi.Controllers
         public bool Post(PaymentApiModel paymentData)
         {
 
-            Order order = paymentData.PaymentData.Order;
+           // Order order = paymentData.PaymentData.Order;
 
             if (paymentData.Card.Id == 0)
             {
@@ -88,8 +88,9 @@ namespace PaymentApi.Controllers
             //TODO : VOIR POURQUOI CET ENCULAY DE EF NE VEUX PAS METTRE A JOUR LORDERID VTFF IL EST 58
             PaymentData newPayment = new PaymentData() {
 
+                
                 Customer = customer,
-                Order = order
+                OrderId = paymentData.PaymentData.OrderId
             };
 
             paymentRepository.SavePayment(newPayment);

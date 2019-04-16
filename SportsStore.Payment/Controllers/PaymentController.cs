@@ -72,7 +72,7 @@ namespace SportsStore.Payment.Controllers
 
             PaymentData payment = new PaymentData()
             {
-                Order = orderRepository.GetById(int.Parse(payementDetails.TransactionId)),
+                OrderId = orderRepository.GetById(int.Parse(payementDetails.TransactionId)).Id,
                 Customer = customer
             };
 

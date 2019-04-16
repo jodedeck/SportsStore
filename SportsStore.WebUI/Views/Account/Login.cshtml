@@ -11,7 +11,7 @@
     </div>
     <div class="panel-body">
         <p class="lead">Please log in to access the administration area:</p>
-        @using (Html.BeginForm())
+        @using (Html.BeginForm(new { returnUrl = Request.UrlReferrer }))
         {
             @Html.ValidationSummary()
             <div class="form-group">
